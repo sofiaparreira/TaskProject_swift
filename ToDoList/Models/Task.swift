@@ -6,3 +6,16 @@
 //
 
 import Foundation
+
+struct Task {
+    var title: String
+    var description: String?
+    var isCompleted: Bool = false
+}
+
+// Inicialização correta da variável tasks
+var tasks: [Task] = [
+    Task(title: "Fazer café"),
+    Task(title: "Trabalhar", description: "Terminar o site do trabalho"),
+    Task(title: "Estudar para a prova")
+]

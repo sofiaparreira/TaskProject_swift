@@ -35,8 +35,16 @@ class HomeViewController: UIViewController {
         button.backgroundColor = UIColor(named: AssetsConstants.darkPurple)
         button.layer.cornerRadius = 12.0
         button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(didTapGetStartedButton), for: .touchUpInside)
         return button
+        
     }()
+    
+    
+    @objc func didTapGetStartedButton(){
+        navigationController?.pushViewController(TaskViewController(), animated: true)
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
