@@ -5,7 +5,27 @@ protocol TaskDelegate: AnyObject {
     func didAddTask()
 }
 class TaskViewController: UIViewController {
+    private let userDefaults = UserDefaults.standard
+    private let tasksKey = "task-app"
     
+    func saveTasks(){
+        do {
+            let tasksData = try JSONEncoder().encode(tasks)
+            userDefaults.setValue(tasksData, forKey: tasksKey)
+        } catch {
+            print("Error: \(error)")
+        }
+    }
+    
+    private func loadTasks() {
+        guard let tasksData = userDefaults.data(forKey: tasksKey) else{return}
+        do{
+            tasks = try JSONDecoder().decode([Task].self, from: tasksData)
+        } catch {
+            print("Error: \(error)")
+
+        }
+    }
     
     private lazy var taskImgView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: AssetsConstants.taskIllustration))
@@ -38,6 +58,7 @@ class TaskViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadTasks()
         setupNavigationBar()
         addGradientBackground()
         addSubviews()
@@ -104,6 +125,7 @@ extension TaskViewController: UITableViewDelegate, UITableViewDataSource {
         if editingStyle == .delete {
             tasks.remove(at: indexPath.row)
             tasksTableView.reloadData()
+            saveTasks()
         }
     }
 }
@@ -119,6 +141,7 @@ extension TaskViewController: TasksTableViewHeaderDelegate {
 extension TaskViewController: TaskDelegate {
     func didAddTask() {
         tasksTableView.reloadData()
+        saveTasks()
     }
     
     

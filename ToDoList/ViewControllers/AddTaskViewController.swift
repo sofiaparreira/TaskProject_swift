@@ -1,8 +1,29 @@
 import UIKit
 
 class AddTasksViewController: UIViewController, AddTasksViewHeaderDelegate {
-    
+
     weak var delegate: TaskDelegate?
+    private let userDefaults = UserDefaults.standard
+    private let tasksKey = "task-app"
+    
+    func saveTasks(){
+        do {
+            let tasksData = try JSONEncoder().encode(tasks)
+            userDefaults.setValue(tasksData, forKey: tasksKey)
+        } catch {
+            print("Error: \(error)")
+        }
+    }
+    
+    private func loadTasks() {
+        guard let tasksData = userDefaults.data(forKey: tasksKey) else{return}
+        do{
+            tasks = try JSONDecoder().decode([Task].self, from: tasksData)
+        } catch {
+            print("Error: \(error)")
+
+        }
+    }
     
     private lazy var header: AddTasksViewHeader = {
         let header = AddTasksViewHeader(frame: .zero)
@@ -46,12 +67,14 @@ class AddTasksViewController: UIViewController, AddTasksViewHeaderDelegate {
         button.setTitle("Salvar", for: .normal)
         button.setTitleColor(UIColor(named: AssetsConstants.lilac), for: .normal)
         button.addTarget(self, action: #selector(didTapSaveTaskButton), for: .touchUpInside)
+
         return button
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        loadTasks()
         addSubviews()
         setupConstraints()
     }
@@ -110,7 +133,11 @@ class AddTasksViewController: UIViewController, AddTasksViewHeaderDelegate {
         tasks.append(newTask)
         delegate?.didAddTask()
         dismiss(animated: true)
+        saveTasks()
+
     }
+    
+    
 
     
 }
